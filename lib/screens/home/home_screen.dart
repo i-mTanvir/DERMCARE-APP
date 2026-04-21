@@ -148,74 +148,58 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      // Male Doctors card
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => context.go('/doctors/male'),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE3F2FD),
-                              borderRadius: BorderRadius.circular(14),
+                  Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFD4DCEC)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(13),
                             ),
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.male,
-                                  color: Colors.blue,
-                                  size: 36,
+                            onTap: () => context.go('/doctors/male'),
+                            child: const Center(
+                              child: Text(
+                                'Male Doctors',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Male Doctors',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Female Doctors card
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => context.go('/doctors/female'),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFCE4EC),
-                              borderRadius: BorderRadius.circular(14),
+                        const VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Color(0xFFD4DCEC),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: const BorderRadius.horizontal(
+                              right: Radius.circular(13),
                             ),
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.female,
-                                  color: Colors.pink,
-                                  size: 36,
+                            onTap: () => context.go('/doctors/female'),
+                            child: const Center(
+                              child: Text(
+                                'Female Doctors',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Female Doctors',
-                                  style: TextStyle(
-                                    color: Colors.pink,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

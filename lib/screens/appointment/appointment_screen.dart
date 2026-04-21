@@ -100,7 +100,8 @@ class AppointmentScreen extends StatelessWidget {
                   );
                 }
 
-                final appointments = snapshot.data ?? const <AppointmentModel>[];
+                final appointments =
+                    snapshot.data ?? const <AppointmentModel>[];
                 if (appointments.isEmpty) {
                   return Center(
                     child: Padding(
@@ -288,7 +289,7 @@ class AppointmentScreen extends StatelessWidget {
                 );
               },
             ),
-      bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
     );
   }
 }

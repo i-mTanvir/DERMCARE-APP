@@ -233,6 +233,7 @@ class AuthService extends ChangeNotifier {
     required int age,
     required String description,
     required String licenseNumber,
+    String? imageUrl,
   }) async {
     if (userId.isEmpty) throw StateError('Not logged in');
 
@@ -246,7 +247,7 @@ class AuthService extends ChangeNotifier {
       'gender': gender.trim().toLowerCase(),
       'age': age,
       'about': description.trim(),
-      'image_url': profileImage,
+      'image_url': imageUrl ?? profileImage,
     }, onConflict: 'id');
   }
 

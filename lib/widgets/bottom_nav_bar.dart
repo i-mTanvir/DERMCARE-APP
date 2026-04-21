@@ -23,15 +23,12 @@ class AppBottomNavBar extends StatelessWidget {
             context.go('/home');
             break;
           case 1:
-            context.go('/schedule');
-            break;
-          case 2:
             context.go('/appointments');
             break;
-          case 3:
+          case 2:
             context.go('/notification');
             break;
-          case 4:
+          case 3:
             context.go('/profile');
             break;
         }
@@ -41,10 +38,6 @@ class AppBottomNavBar extends StatelessWidget {
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
-            label: 'Schedule'),
         BottomNavigationBarItem(
             icon: Icon(Icons.list_alt_outlined),
             activeIcon: Icon(Icons.list_alt),

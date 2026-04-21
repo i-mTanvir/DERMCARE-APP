@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -139,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const AppBottomNavBar(currentIndex: 4),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 3),
     );
   }
 
@@ -230,4 +230,3 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 }
-

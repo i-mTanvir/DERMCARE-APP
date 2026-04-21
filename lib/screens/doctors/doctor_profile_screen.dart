@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -25,6 +29,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   String _gender = 'male';
   bool _loading = true;
   bool _saving = false;
+  XFile? _pickedImage;
+  String _currentImageUrl = '';
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -51,24 +58,95 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
       _ageCtrl.text = (row['age'] ?? '').toString();
       _licenseCtrl.text = (row['license_number'] ?? '').toString();
       _descriptionCtrl.text = (row['about'] ?? '').toString();
+      _currentImageUrl = (row['image_url'] ?? '').toString();
       final g = (row['gender'] ?? 'male').toString().toLowerCase();
       _gender = g == 'female' ? 'female' : 'male';
     }
     setState(() => _loading = false);
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final image = await _picker.pickImage(
+        source: source,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+      setState(() => _pickedImage = image);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to pick image: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  void _openImagePickerSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _guessExt(String filename) {
+    final parts = filename.split('.');
+    if (parts.length < 2) return 'jpg';
+    final ext = parts.last.trim().toLowerCase();
+    if (ext.isEmpty || ext.length > 5) return 'jpg';
+    return ext;
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
+    final authService = context.read<AuthService>();
     try {
-      await context.read<AuthService>().updateDoctorProfile(
+      String finalImageUrl = _currentImageUrl;
+      if (_pickedImage != null) {
+        final bytes = await _pickedImage!.readAsBytes();
+        finalImageUrl = await authService.uploadProfileImage(
+              bytes: bytes,
+              fileExt: _guessExt(_pickedImage!.name),
+            );
+      }
+
+      await authService.updateDoctorProfile(
             designation: _designationCtrl.text,
             specialist: _specialistCtrl.text,
             gender: _gender,
             age: int.tryParse(_ageCtrl.text.trim()) ?? 0,
             description: _descriptionCtrl.text,
             licenseNumber: _licenseCtrl.text,
+            imageUrl: finalImageUrl,
           );
+      _currentImageUrl = finalImageUrl;
+      _pickedImage = null;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -148,11 +226,25 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                         ),
                         child: Column(
                           children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.white24,
-                              child: const Icon(Icons.medical_services,
-                                  size: 46, color: Colors.white),
+                            GestureDetector(
+                              onTap: _openImagePickerSheet,
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.white24,
+                                backgroundImage: _pickedImage != null
+                                    ? (kIsWeb
+                                        ? NetworkImage(_pickedImage!.path)
+                                        : FileImage(File(_pickedImage!.path))
+                                            as ImageProvider)
+                                    : (_currentImageUrl.isNotEmpty
+                                        ? NetworkImage(_currentImageUrl)
+                                        : null),
+                                child: (_pickedImage == null &&
+                                        _currentImageUrl.isEmpty)
+                                    ? const Icon(Icons.medical_services,
+                                        size: 46, color: Colors.white)
+                                    : null,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -175,6 +267,12 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                               'Doctor Profile',
                               style: TextStyle(
                                   fontSize: 13, color: Colors.white70),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Tap photo to upload',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.white70),
                             ),
                           ],
                         ),
@@ -228,8 +326,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                               keyboardType: TextInputType.number,
                               validator: (v) {
                                 final age = int.tryParse((v ?? '').trim());
-                                if (age == null || age < 22)
+                                if (age == null || age < 22) {
                                   return 'Enter valid age';
+                                }
                                 return null;
                               },
                             ),

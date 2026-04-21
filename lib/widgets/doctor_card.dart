@@ -1,13 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
 import '../models/doctor_model.dart';
- 
+
 class DoctorCard extends StatelessWidget {
   final DoctorModel doctor;
   final VoidCallback onTap;
- 
+
   const DoctorCard({super.key, required this.doctor, required this.onTap});
- 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -18,8 +18,12 @@ class DoctorCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 4))
+          ],
         ),
         child: Row(
           children: [
@@ -27,10 +31,12 @@ class DoctorCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: doctor.imageUrl.isNotEmpty
-                ? Image.network(doctor.imageUrl, width: 70, height: 70,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _placeholder())
-                : _placeholder(),
+                  ? Image.network(doctor.imageUrl,
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _placeholder())
+                  : _placeholder(),
             ),
             const SizedBox(width: 14),
             // Info
@@ -38,22 +44,29 @@ class DoctorCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(doctor.name, style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.darkText)),
+                  Text(doctor.name,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.darkText)),
                   const SizedBox(height: 4),
-                  Text(doctor.specialty, style: const TextStyle(
-                    fontSize: 13, color: AppColors.primaryLight)),
+                  Text(doctor.specialty,
+                      style: const TextStyle(
+                          fontSize: 13, color: AppColors.primaryLight)),
                   const SizedBox(height: 8),
                   Row(children: [
                     const Icon(Icons.star, size: 14, color: Colors.amber),
                     const SizedBox(width: 4),
-                    Text('${doctor.rating}', style: const TextStyle(
-                      fontSize: 13, color: AppColors.bodyText)),
+                    Text('${doctor.rating}',
+                        style: const TextStyle(
+                            fontSize: 13, color: AppColors.bodyText)),
                     const SizedBox(width: 16),
-                    const Icon(Icons.work_outline, size: 14, color: AppColors.greyText),
+                    const Icon(Icons.work_outline,
+                        size: 14, color: AppColors.greyText),
                     const SizedBox(width: 4),
-                    Text('${doctor.experience} yrs', style: const TextStyle(
-                      fontSize: 13, color: AppColors.greyText)),
+                    Text('${doctor.experience} yrs',
+                        style: const TextStyle(
+                            fontSize: 13, color: AppColors.greyText)),
                   ]),
                 ],
               ),
@@ -62,21 +75,41 @@ class DoctorCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: doctor.gender == 'female' ? const Color(0xFFFCE4EC) : const Color(0xFFE3F2FD),
+                color: doctor.gender == 'female'
+                    ? const Color(0xFFFCE4EC)
+                    : const Color(0xFFE3F2FD),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(doctor.gender == 'female' ? 'â™€' : 'â™‚',
-                style: TextStyle(
-                  color: doctor.gender == 'female' ? Colors.pink : Colors.blue,
-                  fontWeight: FontWeight.bold)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    doctor.gender == 'female' ? Icons.female : Icons.male,
+                    size: 14,
+                    color:
+                        doctor.gender == 'female' ? Colors.pink : Colors.blue,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    doctor.gender == 'female' ? 'F' : 'M',
+                    style: TextStyle(
+                      color:
+                          doctor.gender == 'female' ? Colors.pink : Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
- 
+
   Widget _placeholder() => Container(
-    width: 70, height: 70, color: AppColors.inputBg,
-    child: const Icon(Icons.person, size: 36, color: AppColors.greyText));
+      width: 70,
+      height: 70,
+      color: AppColors.inputBg,
+      child: const Icon(Icons.person, size: 36, color: AppColors.greyText));
 }
