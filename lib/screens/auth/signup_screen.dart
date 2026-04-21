@@ -113,22 +113,33 @@ class _SignupScreenState extends State<SignupScreen> {
                   style: TextStyle(fontSize: 14, color: AppColors.greyText),
                 ),
                 const SizedBox(height: 24),
-                ToggleButtons(
-                  isSelected: [_role == 'patient', _role == 'doctor'],
-                  onPressed: (index) {
-                    setState(() {
-                      _role = index == 0 ? 'patient' : 'doctor';
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  selectedColor: Colors.white,
-                  fillColor: AppColors.primary,
-                  color: AppColors.primary,
-                  constraints: BoxConstraints(
-                    minWidth: (MediaQuery.of(context).size.width - 56) / 2,
-                    minHeight: 44,
+                Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFD4DCEC)),
                   ),
-                  children: const [Text('Patient'), Text('Doctor')],
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _roleSegment(
+                          label: 'Patient',
+                          selected: _role == 'patient',
+                          onTap: () => setState(() => _role = 'patient'),
+                          isLeft: true,
+                        ),
+                      ),
+                      Expanded(
+                        child: _roleSegment(
+                          label: 'Doctor',
+                          selected: _role == 'doctor',
+                          onTap: () => setState(() => _role = 'doctor'),
+                          isLeft: false,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 CustomTextField(
@@ -146,57 +157,34 @@ class _SignupScreenState extends State<SignupScreen> {
                   keyboardType: TextInputType.emailAddress,
                   validator: Validators.validateEmail,
                 ),
-                CustomTextField(
-                  controller: _passCtrl,
-                  label: 'Password',
-                  hint: 'Min. 6 characters',
-                  icon: Icons.lock_outline,
-                  obscureText: _obscurePass,
-                  validator: Validators.validatePassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePass ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.greyText,
-                    ),
-                    onPressed: () => setState(() => _obscurePass = !_obscurePass),
-                  ),
-                ),
-                CustomTextField(
-                  controller: _confirmCtrl,
-                  label: 'Confirm Password',
-                  hint: 'Re-enter password',
-                  icon: Icons.lock_outline,
-                  obscureText: _obscureConfirm,
-                  validator: (v) => Validators.validateConfirmPassword(v, _passCtrl.text),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.greyText,
-                    ),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                  ),
-                ),
+                if (!_isDoctor) ..._passwordFields(),
                 if (_isDoctor) ...[
                   CustomTextField(
                     controller: _licenseCtrl,
                     label: 'License Number',
                     hint: 'Enter medical license number',
                     icon: Icons.verified_user_outlined,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'License number is required' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'License number is required'
+                        : null,
                   ),
                   CustomTextField(
                     controller: _designationCtrl,
                     label: 'Designation',
                     hint: 'e.g. Consultant Dermatologist',
                     icon: Icons.badge_outlined,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Designation is required' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Designation is required'
+                        : null,
                   ),
                   CustomTextField(
                     controller: _specialistCtrl,
                     label: 'Specialist',
                     hint: 'e.g. Clinical Dermatology',
                     icon: Icons.medical_services_outlined,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Specialist is required' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Specialist is required'
+                        : null,
                   ),
                   CustomTextField(
                     controller: _ageCtrl,
@@ -220,7 +208,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<String>(
-                    value: _gender,
+                    initialValue: _gender,
                     items: const [
                       DropdownMenuItem(value: 'male', child: Text('Male')),
                       DropdownMenuItem(value: 'female', child: Text('Female')),
@@ -231,7 +219,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       fillColor: AppColors.inputBg,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: Color(0xFFDEE4F0), width: 1.5),
+                        borderSide: const BorderSide(
+                            color: Color(0xFFDEE4F0), width: 1.5),
                       ),
                     ),
                   ),
@@ -242,11 +231,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     hint: 'Write your profile description',
                     icon: Icons.notes_outlined,
                     maxLines: 4,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Description is required' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Description is required'
+                        : null,
                   ),
+                  ..._passwordFields(),
                 ],
                 const SizedBox(height: 8),
-                CustomButton(text: 'Create Account', onPressed: _signup, isLoading: _loading),
+                CustomButton(
+                    text: 'Create Account',
+                    onPressed: _signup,
+                    isLoading: _loading),
                 const SizedBox(height: 20),
                 Center(
                   child: GestureDetector(
@@ -256,7 +251,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         children: [
                           TextSpan(
                             text: 'Already have an account? ',
-                            style: TextStyle(color: AppColors.greyText, fontSize: 14),
+                            style: TextStyle(
+                                color: AppColors.greyText, fontSize: 14),
                           ),
                           TextSpan(
                             text: 'Login',
@@ -278,5 +274,72 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  Widget _roleSegment({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+    required bool isLeft,
+  }) {
+    return Material(
+      color: selected ? AppColors.primary : Colors.transparent,
+      borderRadius: BorderRadius.horizontal(
+        left: isLeft ? const Radius.circular(13) : Radius.zero,
+        right: isLeft ? Radius.zero : const Radius.circular(13),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.horizontal(
+          left: isLeft ? const Radius.circular(13) : Radius.zero,
+          right: isLeft ? Radius.zero : const Radius.circular(13),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? Colors.white : AppColors.primary,
+              fontSize: 32 / 2,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _passwordFields() {
+    return [
+      CustomTextField(
+        controller: _passCtrl,
+        label: 'Password',
+        hint: 'Min. 6 characters',
+        icon: Icons.lock_outline,
+        obscureText: _obscurePass,
+        validator: Validators.validatePassword,
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscurePass ? Icons.visibility_off : Icons.visibility,
+            color: AppColors.greyText,
+          ),
+          onPressed: () => setState(() => _obscurePass = !_obscurePass),
+        ),
+      ),
+      CustomTextField(
+        controller: _confirmCtrl,
+        label: 'Confirm Password',
+        hint: 'Re-enter password',
+        icon: Icons.lock_outline,
+        obscureText: _obscureConfirm,
+        validator: (v) => Validators.validateConfirmPassword(v, _passCtrl.text),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+            color: AppColors.greyText,
+          ),
+          onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+        ),
+      ),
+    ];
   }
 }
